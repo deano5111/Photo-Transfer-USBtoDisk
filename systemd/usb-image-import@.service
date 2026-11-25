@@ -1,0 +1,9 @@
+[Unit]
+Description=Import images from removable device %I
+BindsTo=dev-%i.device
+After=dev-%i.device
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/usb-image-import.sh %I
+TimeoutStartSec=infinity

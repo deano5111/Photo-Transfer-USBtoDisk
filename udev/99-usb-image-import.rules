@@ -1,0 +1,12 @@
+# Trigger image import when a USB stick or SD card appears.
+# Partitions trigger even without detected filesystem info: on worn sticks blkid can fail
+# (unreadable sectors at the end of the drive); the script then reads the boot sector itself.
+ACTION=="add", SUBSYSTEM=="block", ENV{DEVTYPE}=="partition", ENV{ID_BUS}=="usb", \
+    TAG+="systemd", ENV{SYSTEMD_WANTS}+="usb-image-import@%k.service"
+ACTION=="add", SUBSYSTEM=="block", ENV{DEVTYPE}=="partition", KERNEL=="mmcblk[0-9]*", \
+    TAG+="systemd", ENV{SYSTEMD_WANTS}+="usb-image-import@%k.service"
+# Partitionless "superfloppy" media: whole disk carries the filesystem
+ACTION=="add", SUBSYSTEM=="block", ENV{DEVTYPE}=="disk", ENV{ID_FS_USAGE}=="filesystem", ENV{ID_BUS}=="usb", \
+    TAG+="systemd", ENV{SYSTEMD_WANTS}+="usb-image-import@%k.service"
+ACTION=="add", SUBSYSTEM=="block", ENV{DEVTYPE}=="disk", ENV{ID_FS_USAGE}=="filesystem", KERNEL=="mmcblk[0-9]*", \
+    TAG+="systemd", ENV{SYSTEMD_WANTS}+="usb-image-import@%k.service"
